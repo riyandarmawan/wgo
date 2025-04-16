@@ -19,7 +19,7 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { NavLink, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router";
 import { registerUser } from "@/lib/api";
 
 const formSchema = z.object({
@@ -117,12 +117,12 @@ export default function RegisterPage() {
         <CardFooter>
           <p className="text-center text-sm w-full">
             Have an account?{" "}
-            <NavLink
+            <Link
               to={{ pathname: "/auth/login" }}
               className="text-blue-500 dark:text-sky-500 hover:underline"
             >
               Login here
-            </NavLink>
+            </Link>
           </p>
         </CardFooter>
       </Card>
