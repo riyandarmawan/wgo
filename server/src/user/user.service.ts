@@ -15,7 +15,9 @@ export class UserService {
     return this.userRepository.findOne({ where: { username } });
   }
 
-  async createUser(createUserDto: CreateUserDto): Promise<User> {
+  async createUser(
+    createUserDto: CreateUserDto,
+  ): Promise<Omit<User, 'password'>> {
     if (await this.findByUsername(createUserDto.username))
       throw new ConflictException('Username already exists');
 
@@ -26,6 +28,10 @@ export class UserService {
     };
 
     const newUser = this.userRepository.create(userWithHashedPassword);
-    return this.userRepository.save(newUser);
+    const savedUser = await this.userRepository.save(newUser);
+
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    const { password, ...userWithoutPassword } = savedUser;
+    return userWithoutPassword;
   }
 }

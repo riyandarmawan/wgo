@@ -5,6 +5,7 @@ import { CreateUserDto } from 'src/user/dto/create-user.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { JwtPayload } from './interfaces/jwt-payload.interface';
+import { wrapResponse } from 'src/utils/response-wrapper';
 
 @Injectable()
 export class AuthService {
@@ -26,23 +27,22 @@ export class AuthService {
 
     const payload: JwtPayload = { sub: user.id, username: user.username };
 
-    return {
-      message: 'Login successful',
-      data: {
-        access_token: await this.jwtService.signAsync(payload),
-      },
-    };
+    const token = await this.jwtService.signAsync(payload);
+
+    return wrapResponse('Login successful', {
+      access_token: token,
+    });
   }
 
   async register(
     createUserDto: CreateUserDto,
   ): Promise<{ message: string; data: { access_token: string } }> {
-    const { username, password } =
-      await this.userService.createUser(createUserDto);
-    const loginResult = await this.login({ username, password });
-    return {
-      message: 'Registration successful',
-      data: loginResult.data,
-    };
+    const user = await this.userService.createUser(createUserDto);
+
+    const payload: JwtPayload = { sub: user.id, username: user.username };
+
+    const token = await this.jwtService.signAsync(payload);
+
+    return wrapResponse('Registration successful', { access_token: token });
   }
 }
