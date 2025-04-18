@@ -20,36 +20,40 @@ import {
   CardTitle,
 } from "@/components/ui/card";
 import { Link, useNavigate } from "react-router";
-import { loginUser } from "@/lib/api";
+import { loginUser } from "@/lib/api/auth";
+import { useAuth } from "@/auth/useAuth";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
 
-const formSchema = z.object({
+const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
+  const form = useForm<z.infer<typeof loginSchema>>({
+    resolver: zodResolver(loginSchema),
     defaultValues: {
       username: "",
       password: "",
     },
   });
 
-  async function onSubmit(values: z.infer<typeof formSchema>) {
+  async function onSubmit(values: z.infer<typeof loginSchema>) {
+    setLoading(true);
     try {
       const res = await loginUser(values);
-      localStorage.setItem("token", res.data.access_token);
+      login(res.data.access_token);
       navigate("/");
     } catch (error: unknown) {
-      if (error instanceof Error) {
-        form.setError("username", {
-          type: "manual",
-          message: error.message,
-        });
-      }
+      toast.error((error as Error).message);
+    } finally {
+      setLoading(false);
     }
   }
 
@@ -93,8 +97,15 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
-              <Button type="submit" className="w-full">
-                Submit
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? (
+                  <span className="flex items-center justify-center space-x-2">
+                    <Loader2 className="animate-spin w-4 h-4" />
+                    <span>Submitting...</span>
+                  </span>
+                ) : (
+                  "Submit"
+                )}
               </Button>
             </form>
           </Form>

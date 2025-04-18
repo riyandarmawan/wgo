@@ -1,11 +1,18 @@
-import { ThemeProvider } from "./components/theme-provider";
+import { useTheme } from "./components/theme-provider";
+import { Toaster } from "./components/ui/sonner";
 import AppRoutes from "./routes/AppRoutes";
 
 function App() {
+  const { theme } = useTheme();
   return (
-    <ThemeProvider defaultTheme="dark" storageKey="vite-ui-theme">
+    <>
+      <Toaster
+        position="top-right"
+        richColors
+        theme={theme === "dark" ? "dark" : "light"}
+      />
       <AppRoutes />
-    </ThemeProvider>
+    </>
   );
 }
 
