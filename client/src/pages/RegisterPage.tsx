@@ -24,7 +24,7 @@ import { registerUser } from "@/lib/api/auth";
 import { useAuth } from "@/auth/useAuth";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const registerSchema = z.object({
   name: z.string().min(1, "Name is required"),
@@ -34,7 +34,7 @@ const registerSchema = z.object({
 
 export default function RegisterPage() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const [loading, setLoading] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof registerSchema>>({
@@ -54,10 +54,19 @@ export default function RegisterPage() {
       navigate("/");
     } catch (error: unknown) {
       toast.error((error as Error).message);
-    } finally{
+    } finally {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (user) {
+      // make a toast
+      toast.success("Login success!", {
+        description: `Welcome back ${user.name}`,
+      });
+    }
+  }, [user]);
 
   return (
     <div className="container flex items-center justify-center h-dvh">

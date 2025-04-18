@@ -24,7 +24,7 @@ import { loginUser } from "@/lib/api/auth";
 import { useAuth } from "@/auth/useAuth";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -33,7 +33,7 @@ const loginSchema = z.object({
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { login } = useAuth();
+  const { login, user } = useAuth();
   const [loading, setLoading] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -49,6 +49,7 @@ export default function LoginPage() {
     try {
       const res = await loginUser(values);
       login(res.data.access_token);
+
       navigate("/");
     } catch (error: unknown) {
       toast.error((error as Error).message);
@@ -56,6 +57,15 @@ export default function LoginPage() {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    if (user) {
+      // make a toast
+      toast.success("Login success!", {
+        description: `Welcome back ${user.name} to WGO!`,
+      });
+    }
+  }, [user]);
 
   return (
     <div className="container flex items-center justify-center h-dvh">
