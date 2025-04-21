@@ -19,12 +19,12 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate } from "react-router-dom";
 import { loginUser } from "@/lib/api/auth";
 import { useAuth } from "@/auth/useAuth";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 
 const loginSchema = z.object({
   username: z.string().min(1, "Username is required"),
@@ -33,7 +33,7 @@ const loginSchema = z.object({
 
 export default function LoginPage() {
   const navigate = useNavigate();
-  const { login, user } = useAuth();
+  const { login } = useAuth();
   const [loading, setLoading] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -57,15 +57,6 @@ export default function LoginPage() {
       setLoading(false);
     }
   }
-
-  useEffect(() => {
-    if (user) {
-      // make a toast
-      toast.success("Login success!", {
-        description: `Welcome back ${user.name} to WGO!`,
-      });
-    }
-  }, [user]);
 
   return (
     <div className="container flex items-center justify-center h-dvh">

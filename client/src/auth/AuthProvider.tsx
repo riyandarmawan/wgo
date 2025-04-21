@@ -10,6 +10,7 @@ type props = {
 export function AuthProvider({ children }: props) {
   const [token, setToken] = useState<string | null>(null);
   const [user, setUser] = useState<JwtPayload | null>(null);
+  const [loading, setLoading] = useState(true); // <- Add loading state
 
   const decodeAndSetUser = (token: string) => {
     const decoded = jwtDecode<JwtPayload>(token);
@@ -22,6 +23,7 @@ export function AuthProvider({ children }: props) {
       setToken(storedToken);
       decodeAndSetUser(storedToken);
     }
+    setLoading(false); // <- done loading
   }, []);
 
   const login = (newToken: string) => {
@@ -44,5 +46,8 @@ export function AuthProvider({ children }: props) {
     logout,
   };
 
+  if (loading) return; // <- Delay rendering until ready
+
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
+
