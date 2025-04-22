@@ -62,7 +62,7 @@ export default function Header() {
           {/* theme toggle */}
           <DropdownMenuItem
             onClick={toggleTheme}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 cursor-pointer"
           >
             {theme === "light" ? (
               <>
