@@ -13,7 +13,7 @@ export default function Header() {
     <header
       className={cn(
         "py-4 container inset-x-0 top-0 fixed bg-secondary transition-all duration-300 ease-in-out flex gap-4 flex-col z-10",
-        search ? "h-dvh" : "h-32" // Expand height if search is active
+        search ? "h-dvh" : "h-36" // Expand height if search is active
       )}
     >
       {/* Header top row: logo/title and dropdown menu */}

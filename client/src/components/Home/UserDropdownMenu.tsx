@@ -33,7 +33,7 @@ export function UserDropdownMenu() {
         <DropdownMenuLabel>{user?.name}</DropdownMenuLabel>
         <DropdownMenuSeparator />
 
-        <DropdownMenuItem asChild>
+        <DropdownMenuItem>
           <Link
             to="/profile/me"
             className="flex items-center gap-2 cursor-pointer"
@@ -47,7 +47,6 @@ export function UserDropdownMenu() {
 
         <DropdownMenuItem
           onClick={toggleTheme}
-          asChild
           className="flex items-center gap-2 cursor-pointer"
         >
           {theme === "light" ? (
@@ -66,7 +65,6 @@ export function UserDropdownMenu() {
         <DropdownMenuItem
           className="flex items-center gap-2 cursor-pointer"
           onClick={logout}
-          asChild
         >
           <LogOut />
           Log out
