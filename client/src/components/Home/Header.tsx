@@ -1,92 +1,33 @@
-import { useAuth } from "@/auth/useAuth";
-import { useTheme } from "@/components/theme-provider";
-import { Button } from "@/components/ui/button";
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import {
-  EllipsisVertical,
-  LogOut,
-  MessageCircle,
-  Moon,
-  Sun,
-  User,
-} from "lucide-react";
-import { Link } from "react-router-dom";
+// Import necessary hooks and components
+import { Separator } from "../ui/separator"; // Reusable separator component
+import { useState } from "react"; // React hooks
+import { cn } from "@/lib/utils"; // Utility for conditionally joining classNames
+import { AppTitle } from "../AppTitle";
+import { UserDropdownMenu } from "./UserDropdownMenu";
+import { SearchInput } from "./SearchInput";
 
 export default function Header() {
-  const { user, logout } = useAuth();
-  const { theme, setTheme } = useTheme();
-
-  const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
+  const [search, setSearch] = useState<string>(""); // Local state for search input
 
   return (
-    <header className="py-4 container inset-x-0 top-0 fixed bg-secondary flex justify-between items-center">
-      {/* title */}
-      <Link to="/" className="flex items-center gap-1">
-        <MessageCircle className="" />
-        <h1 className="text-lg font-medium">WGO</h1>
-      </Link>
+    <header
+      className={cn(
+        "py-4 container inset-x-0 top-0 fixed bg-secondary transition-all duration-300 ease-in-out flex gap-4 flex-col z-10",
+        search ? "h-dvh" : "h-32" // Expand height if search is active
+      )}
+    >
+      {/* Header top row: logo/title and dropdown menu */}
+      <div className="flex items-center justify-between">
+        {/* App title and icon */}
+        <AppTitle />
 
-      {/* options menu */}
-      <DropdownMenu>
-        <DropdownMenuTrigger asChild>
-          <Button variant="secondary" className="cursor-pointer">
-            <EllipsisVertical />
-          </Button>
-        </DropdownMenuTrigger>
-        <DropdownMenuContent>
-          <DropdownMenuLabel>{user?.name}</DropdownMenuLabel>
+        {/* Dropdown menu with user options */}
+        <UserDropdownMenu />
+      </div>
 
-          <DropdownMenuSeparator />
+      <Separator />
 
-          {/* user */}
-          <DropdownMenuItem>
-            <Link
-              to="/profile/me"
-              className="flex items-center gap-2 cursor-pointer"
-            >
-              <User />
-              Profile
-            </Link>
-          </DropdownMenuItem>
-
-          <DropdownMenuSeparator />
-
-          {/* options */}
-          {/* theme toggle */}
-          <DropdownMenuItem
-            onClick={toggleTheme}
-            className="flex items-center gap-2 cursor-pointer"
-          >
-            {theme === "light" ? (
-              <>
-                <Moon />
-                Dark theme
-              </>
-            ) : (
-              <>
-                <Sun />
-                Light theme
-              </>
-            )}
-          </DropdownMenuItem>
-
-          {/* Log out */}
-          <DropdownMenuItem
-            className="flex items-center gap-2 cursor-pointer"
-            onClick={logout}
-          >
-            <LogOut />
-            Log out
-          </DropdownMenuItem>
-        </DropdownMenuContent>
-      </DropdownMenu>
+      <SearchInput search={search} onChange={setSearch} />
     </header>
   );
 }

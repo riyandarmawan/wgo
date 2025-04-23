@@ -1,4 +1,4 @@
-import RequireAuth from "@/components/require-auth";
+import RequireAuth from "@/components/RequireAuth";
 import HomePage from "@/pages/HomePage";
 import LoginPage from "@/pages/LoginPage";
 import NotFoundPage from "@/pages/NotFoundPage";

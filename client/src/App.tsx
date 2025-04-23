@@ -1,4 +1,4 @@
-import { useTheme } from "./components/theme-provider";
+import { useTheme } from "./components/ThemeProvider";
 import { Toaster } from "./components/ui/sonner";
 import AppRoutes from "./routes/AppRoutes";
 
