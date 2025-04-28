@@ -1,9 +1,10 @@
-import { ConflictException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
 import { Repository } from 'typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';
 import * as bcrypt from 'bcryptjs';
+import { UsernameAlreadyExistsException } from './exceptions/username-already-exists.exception';
 
 @Injectable()
 export class UserService {
@@ -23,7 +24,7 @@ export class UserService {
     createUserDto: CreateUserDto,
   ): Promise<Omit<User, 'password'>> {
     if (await this.findByUsername(createUserDto.username))
-      throw new ConflictException('Username already exists');
+      throw new UsernameAlreadyExistsException();
 
     const hashedPassword = await bcrypt.hash(createUserDto.password, 10);
     const userWithHashedPassword = {

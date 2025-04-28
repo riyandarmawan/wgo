@@ -1,4 +1,4 @@
-export enum FriendStatus {
+export enum FriendRequestStatus {
   PENDING = 'pending',
   ACCEPTED = 'accepted',
 }
