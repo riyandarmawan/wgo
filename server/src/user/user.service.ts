@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { User } from './user.entity';
-import { Repository } from 'typeorm';
+import { Like, Not, Repository } from 'typeorm';
 import { CreateUserDto } from './dtos/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { UsernameAlreadyExistsException } from './exceptions/username-already-exists.exception';
@@ -18,6 +18,22 @@ export class UserService {
 
   findByUsername(username: string): Promise<User | null> {
     return this.userRepository.findOne({ where: { username } });
+  }
+
+  search({
+    keyword,
+    userId,
+  }: {
+    keyword: string;
+    userId: string;
+  }): Promise<User[]> {
+    return this.userRepository.find({
+      select: ['id', 'username', 'name'],
+      where: [
+        { id: Not(userId), username: Like(`%${keyword}%`) },
+        { id: Not(userId), name: Like(`%${keyword}%`) },
+      ],
+    });
   }
 
   async createUser(
