@@ -12,9 +12,9 @@ const buttonVariants = cva(
         default:
           "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
         accept:
-          "bg-accept text-accept-foreground shadow-xs hover:bg-accept",
+          "bg-accept text-accept-foreground shadow-xs hover:bg-accept/90",
         delete:
-          "bg-delete text-delete-foreground shadow-xs hover:bg-delete",
+          "bg-delete text-delete-foreground shadow-xs hover:bg-delete/90",
         destructive:
           "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:

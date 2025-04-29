@@ -163,6 +163,6 @@ body {
 
 @media (max-height: 500px) {
   .friend-search-dialog-content {
-    @apply max-h-[20dvh]
+    @apply max-h-[20dvh] min-h-[20dvh]
   }
 }

@@ -12,6 +12,10 @@ export default function useFetch<T = unknown>(
   const [loading, setLoading] = useState<boolean>(true);
 
   useEffect(() => {
+    setData(null);
+    setError("");
+    setLoading(true);
+
     const token = localStorage.getItem("token");
 
     const fetchData = async () => {
