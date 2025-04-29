@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { RoomItem } from "./RoomItem"; // Import the new RoomItem component
 
 type DummyRooms = {
   name: string;
@@ -61,26 +61,14 @@ const dummyRooms: DummyRooms = [
 
 export default function Rooms() {
   return (
-    <div className="overflow-y-auto py-6 px-2 sm:px-4 flex flex-col gap-4">
+    <div className="flex flex-col gap-4 overflow-y-auto px-2 py-6 sm:px-4">
       {dummyRooms.map((room, index) => (
-        <Link
-          to="#"
+        <RoomItem
           key={index}
-          className="flex items-center gap-2 rounded-md border bg-secondary/20 p-4 shadow-md transition hover:bg-secondary"
-        >
-          <div className="size-16 shrink-0 rounded-full bg-blue-500" />
-          <div className="flex w-full flex-col gap-1">
-            <div className="flex items-center justify-between">
-              <h2 className="line-clamp-1 text-lg font-semibold">
-                {room.name}
-              </h2>
-              <p className="text-xs text-primary/70">{room.date}</p>
-            </div>
-            <p className="line-clamp-1 text-sm text-primary/80">
-              {room.message}
-            </p>
-          </div>
-        </Link>
+          name={room.name}
+          date={room.date}
+          message={room.message}
+        />
       ))}
     </div>
   );
