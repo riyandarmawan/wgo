@@ -18,6 +18,19 @@ export class FriendRequestService {
     private readonly userService: UserService,
   ) {}
 
+  /**
+   * Creates a new friend request between sender and receiver.
+   * - Prevents self-requests.
+   * - Validates both users exist.
+   * - Prevents duplicate pending requests.
+   *
+   * @param senderId - ID of the user sending the friend request.
+   * @param receiverId - ID of the user receiving the friend request.
+   * @returns The newly created friend request entity.
+   * @throws SelfFriendRequestException if sender and receiver are the same.
+   * @throws UserNotFoundException if either user doesn't exist.
+   * @throws PendingFriendRequestException if a pending request already exists.
+   */
   async create({
     senderId,
     receiverId,
@@ -28,7 +41,6 @@ export class FriendRequestService {
     if (senderId === receiverId) throw new SelfFriendRequestException();
 
     const sender = await this.userService.findById(senderId);
-
     const receiver = await this.userService.findById(receiverId);
 
     if (!sender || !receiver) throw new UserNotFoundException();
@@ -52,6 +64,17 @@ export class FriendRequestService {
     return await this.friendRequestRepository.save(newRequestFriend);
   }
 
+  /**
+   * Accepts a pending friend request.
+   * - Ensures the receiver is the one accepting.
+   * - Prevents accepting an already accepted request.
+   *
+   * @param requestId - ID of the friend request to accept.
+   * @param userId - ID of the user attempting to accept the request.
+   * @returns The updated friend request entity.
+   * @throws FriendRequestException if user is not the receiver.
+   * @throws AcceptedFriendRequestException if request is already accepted.
+   */
   async accept({
     requestId,
     userId,
@@ -76,6 +99,15 @@ export class FriendRequestService {
     return friendRequest;
   }
 
+  /**
+   * Deletes an existing friend request.
+   * - Only sender or receiver can delete the request.
+   *
+   * @param requestId - ID of the friend request to delete.
+   * @param userId - ID of the user attempting to delete the request.
+   * @returns The deleted friend request entity.
+   * @throws FriendRequestException if the user is neither sender nor receiver.
+   */
   async delete({
     requestId,
     userId,

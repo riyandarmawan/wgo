@@ -18,6 +18,18 @@ import { FriendRequest } from './friend-request.entity';
 export class FriendRequestController {
   constructor(private readonly friendRequestService: FriendRequestService) {}
 
+  /**
+   * POST /friends/requests
+   *
+   * Creates a new friend request from the authenticated user to the receiver.
+   *
+   * @param receiverId - ID of the user to send the friend request to.
+   * @param senderId - ID of the authenticated user (sender of the request).
+   * @returns The created friend request entity.
+   * @throws SelfFriendRequestException if sender and receiver are the same.
+   * @throws UserNotFoundException if either user doesn't exist.
+   * @throws PendingFriendRequestException if a pending request already exists.
+   */
   @UseGuards(JwtAuthGuard)
   @Post()
   async CreateFriendRequest(
@@ -32,6 +44,17 @@ export class FriendRequestController {
     return friendRequest;
   }
 
+  /**
+   * PATCH /friends/requests/:id/accept
+   *
+   * Accepts an incoming friend request.
+   *
+   * @param requestId - The ID of the friend request to accept.
+   * @param userId - ID of the authenticated user who is accepting the request.
+   * @returns The updated friend request entity with ACCEPTED status.
+   * @throws FriendRequestException if the authenticated user is not the receiver.
+   * @throws AcceptedFriendRequestException if the request has already been accepted.
+   */
   @UseGuards(JwtAuthGuard)
   @Patch(':id/accept')
   async AcceptFriendRequest(
@@ -46,6 +69,16 @@ export class FriendRequestController {
     return response;
   }
 
+  /**
+   * DELETE /friends/requests/:id/delete
+   *
+   * Deletes an existing friend request.
+   *
+   * @param requestId - ID of the friend request to delete.
+   * @param userId - ID of the authenticated user attempting to delete the request.
+   * @returns The deleted friend request entity.
+   * @throws FriendRequestException if the authenticated user is neither the sender nor the receiver.
+   */
   @UseGuards(JwtAuthGuard)
   @Delete(':id/delete')
   async DeleteFriendRequest(
