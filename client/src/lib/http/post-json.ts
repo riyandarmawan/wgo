@@ -1,7 +1,12 @@
-export async function postJSON<T>(url: string, payload: unknown): Promise<T> {
+export async function postJSON<T>(url: string, payload: unknown, token?: string): Promise<T> {
+  const headers: HeadersInit = {
+    "Content-Type": "application/json",
+    ...(token && { Authorization: `Bearer ${token}` }),
+  };
+
   const res = await fetch(url, {
     method: "POST",
-    headers: { "Content-Type": "application/json" },
+    headers,
     body: JSON.stringify(payload),
   });
 

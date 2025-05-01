@@ -11,24 +11,24 @@ import { Button } from "../ui/button";
 import { FriendSearchResultCard } from "./FriendSearchResultCard";
 import useFetch from "@/hooks/useFetch";
 import { useEffect, useState } from "react";
-import { User } from "@/utils/types/user";
 import { toast } from "sonner";
 import { FriendCardSkeleton } from "./FriendCardSkeleton";
+import { Friend } from "@/utils/types/friend";
+import { useDebounce } from "use-debounce";
 
 export function FriendSearchDialog() {
   const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
-  const [keyword, setKeyword] = useState<string>("");
+  const [value, setValue] = useState<string>("");
+  const [keyword] = useDebounce(value, 300);
 
   const {
     data: friends,
     error,
     loading,
-  } = useFetch<User[]>(`${SERVER_URL}/users/search?keyword=${keyword}`);
+  } = useFetch<Friend[]>(`${SERVER_URL}/users/search?keyword=${keyword}`);
 
-  const hanldeKeywordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setKeyword(e.target.value);
-  };
+  const handleValueChange = (value: string) => setValue(value);
 
   useEffect(() => {
     if (error) toast.error(error);
@@ -45,8 +45,10 @@ export function FriendSearchDialog() {
       <div>
         <Input
           type="search"
-          value={keyword}
-          onChange={(e) => hanldeKeywordChange(e)}
+          value={value}
+          onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+            handleValueChange(e.target.value)
+          }
           placeholder="Search by username or by name"
         />
         <div className="friend-search-dialog-content mt-4 flex max-h-[50dvh] min-h-[40dvh] flex-col gap-2 overflow-y-auto">
@@ -55,11 +57,13 @@ export function FriendSearchDialog() {
               <FriendCardSkeleton key={idx} />
             ))
           ) : friends && friends.length > 0 ? (
-            friends.map(({ id, name, username }) => (
+            friends.map(({ id, name, username, friendshipStatus }) => (
               <FriendSearchResultCard
                 key={id}
+                id={id}
                 name={name}
                 username={username}
+                friendshipStatus={friendshipStatus}
               />
             ))
           ) : (

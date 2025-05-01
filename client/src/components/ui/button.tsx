@@ -12,9 +12,11 @@ const buttonVariants = cva(
         default:
           "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
         accept:
-          "bg-accept text-accept-foreground shadow-xs hover:bg-accept/90",
+          "bg-accept text-accept-foreground shadow-xs hover:bg-accept/80",
+        pending:
+          "bg-pending text-pending-foreground shadow-xs hover:bg-pending/80",
         delete:
-          "bg-delete text-delete-foreground shadow-xs hover:bg-delete/90",
+          "bg-delete text-delete-foreground shadow-xs hover:bg-delete/80",
         destructive:
           "bg-destructive text-white shadow-xs hover:bg-destructive/90 focus-visible:ring-destructive/20 dark:focus-visible:ring-destructive/40 dark:bg-destructive/60",
         outline:

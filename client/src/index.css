@@ -29,6 +29,8 @@
   --color-accent-foreground: var(--accent-foreground);
   --color-accept: var(--accept);
   --color-accept-foreground: var(--accept-foreground);
+  --color-pending: var(--pending);
+  --color-pending-foreground: var(--pending-foreground);
   --color-delete: var(--delete);
   --color-delete-foreground: var(--delete-foreground);
   --color-destructive: var(--destructive);
@@ -68,6 +70,8 @@
   --accent-foreground: oklch(0.21 0.006 285.885);
   --accept: oklch(72.3% 0.219 149.579);
   --accept-foreground: oklch(26.6% 0.065 152.934);
+  --pending: oklch(79.5% 0.184 86.047);
+  --pending-foreground: oklch(28.6% 0.066 53.813);
   --delete: oklch(63.7% 0.237 25.331);
   --delete-foreground: oklch(25.8% 0.092 26.042);
   --destructive: oklch(0.577 0.245 27.325);
@@ -106,6 +110,8 @@
   --accent-foreground: oklch(0.985 0 0);
   --accept: oklch(72.3% 0.219 149.579);
   --accept-foreground: oklch(98.2% 0.018 155.826);
+  --pending: oklch(79.5% 0.184 86.047);
+  --pending-foreground: oklch(98.7% 0.026 102.212);
   --delete: oklch(63.7% 0.237 25.331);
   --delete-foreground: oklch(97.1% 0.013 17.38);
   --destructive: oklch(0.704 0.191 22.216);
