@@ -11,6 +11,7 @@ import { useState } from "react";
 import { postJSON } from "@/lib/http/post-json";
 import { toast } from "sonner";
 import { useAuth } from "@/auth/useAuth";
+import useApi from "@/hooks/useApi";
 
 export function FriendSearchResultCard({
   id,
@@ -18,26 +19,21 @@ export function FriendSearchResultCard({
   username,
   friendshipStatus,
 }: Friend) {
-  const [loading, setLoading] = useState<boolean>(true);
   const { token } = useAuth();
 
   const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
+  const { error, loading, execute } = useApi({
+    method: "POST",
+    url: `${SERVER_URL}/friends/requests`,
+    headers: { Authorization: `Bearer ${token}` },
+    payload: { receiverId: id },
+  });
+
+  if (error) return toast.error(error);
+
   const handleAddFriend = async () => {
-    setLoading(true);
-    try {
-      await postJSON(
-        `${SERVER_URL}/friends/requests`,
-        {
-          receiverId: id,
-        },
-        token as string,
-      );
-    } catch (error: unknown) {
-      toast.error((error as Error).message);
-    } finally {
-      setLoading(false);
-    }
+    execute();
   };
 
   return (
