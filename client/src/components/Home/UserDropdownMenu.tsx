@@ -23,7 +23,7 @@ import {
   DialogTrigger,
 } from "../ui/dialog";
 import { useState } from "react";
-import { FriendSearchDialog } from "./FriendSearchDialog";
+import { SearchFriendDialog } from "./SearchFriendDialog";
 
 export function UserDropdownMenu() {
   const { user, logout } = useAuth();
@@ -98,7 +98,7 @@ export function UserDropdownMenu() {
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
-      <FriendSearchDialog />
+      <SearchFriendDialog />
     </Dialog>
   );
 }

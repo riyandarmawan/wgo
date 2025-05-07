@@ -8,7 +8,7 @@ import {
   TooltipTrigger,
 } from "../ui/tooltip";
 
-export function FriendSearchResultCard({
+export function FriendCard({
   id,
   name,
   username,

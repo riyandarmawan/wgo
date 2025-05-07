@@ -8,7 +8,7 @@ import {
 import { DialogClose } from "@radix-ui/react-dialog";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
-import { FriendSearchResultCard } from "./FriendSearchResultCard";
+import { FriendCard } from "./FriendCard";
 import useGet from "@/hooks/useGet";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -16,7 +16,7 @@ import { FriendCardSkeleton } from "./FriendCardSkeleton";
 import { Friend } from "@/utils/types/friend";
 import { useDebounce } from "use-debounce";
 
-export function FriendSearchDialog() {
+export function SearchFriendDialog() {
   const [value, setValue] = useState<string>("");
   const [keyword] = useDebounce(value, 300);
 
@@ -33,6 +33,32 @@ export function FriendSearchDialog() {
   useEffect(() => {
     if (error) toast.error(error);
   }, [error]);
+
+  const renderFriend = () => {
+    return (
+      <>
+        {loading ? (
+          Array.from({ length: 4 }).map((_, idx) => (
+            <FriendCardSkeleton key={idx} />
+          ))
+        ) : friends && friends.length > 0 ? (
+          friends.map(({ id, name, username, friendshipStatus }) => (
+            <FriendCard
+              key={id}
+              id={id}
+              name={name}
+              username={username}
+              friendshipStatus={friendshipStatus}
+            />
+          ))
+        ) : (
+          <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
+            No friends found.
+          </div>
+        )}
+      </>
+    );
+  };
 
   return (
     <DialogContent>
@@ -52,25 +78,7 @@ export function FriendSearchDialog() {
           placeholder="Search by username or by name"
         />
         <div className="friend-search-dialog-content mt-4 flex max-h-[50dvh] min-h-[40dvh] flex-col gap-2 overflow-y-auto">
-          {loading ? (
-            Array.from({ length: 4 }).map((_, idx) => (
-              <FriendCardSkeleton key={idx} />
-            ))
-          ) : friends && friends.length > 0 ? (
-            friends.map(({ id, name, username, friendshipStatus }) => (
-              <FriendSearchResultCard
-                key={id}
-                id={id}
-                name={name}
-                username={username}
-                friendshipStatus={friendshipStatus}
-              />
-            ))
-          ) : (
-            <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
-              No friends found.
-            </div>
-          )}
+          {renderFriend()}
         </div>
       </div>
       <DialogFooter>
