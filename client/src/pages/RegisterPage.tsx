@@ -25,11 +25,11 @@ import {
 
 // Router and Auth utilities
 import { Link, useNavigate } from "react-router-dom";
-import { registerUser } from "@/lib/api/auth"; // API call to register
 import { useAuth } from "@/auth/useAuth"; // Auth context
 import { toast } from "sonner"; // Notification system
 import { Loader2 } from "lucide-react"; // Loading spinner icon
-import { useState } from "react";
+import useApi from "@/hooks/useApi";
+import { useEffect } from "react";
 
 // Define form schema for validation using Zod
 const registerSchema = z.object({
@@ -38,10 +38,22 @@ const registerSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
+type RegisterRequest = {
+  name: string;
+  username: string;
+  password: string;
+};
+
+type RegisterResponse = {
+  access_token: string;
+};
+
 export default function RegisterPage() {
   const navigate = useNavigate();
   const { login } = useAuth(); // Auth context to login after registration
-  const [loading, setLoading] = useState<boolean>(false); // State to manage loading spinner
+  const { error, loading, execute } = useApi<RegisterRequest, RegisterResponse>(
+    { endpoint: "/auth/register", method: "POST" },
+  );
 
   // React Hook Form setup
   const form = useForm<z.infer<typeof registerSchema>>({
@@ -53,22 +65,22 @@ export default function RegisterPage() {
     },
   });
 
+  useEffect(() => {
+    if (error) toast.error(error);
+  }, [error]);
+
   // Handle form submission
   async function onSubmit(values: z.infer<typeof registerSchema>) {
-    setLoading(true); // Show loading spinner
-    try {
-      const res = await registerUser(values); // API call to register
-      login(res.data.access_token); // Store token and mark as logged in
-      navigate("/"); // Navigate to home page
-    } catch (error: unknown) {
-      toast.error((error as Error).message); // Show error toast
-    } finally {
-      setLoading(false); // Reset loading spinner
-    }
+    const response = await execute(values);
+
+    if (!response) return;
+
+    login(response.access_token);
+    navigate("/");
   }
 
   return (
-    <div className="container flex items-center justify-center h-dvh">
+    <div className="container flex h-dvh items-center justify-center">
       {/* Registration form card */}
       <Card className="w-full max-w-sm">
         <CardHeader>
@@ -133,7 +145,7 @@ export default function RegisterPage() {
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? (
                   <span className="flex items-center justify-center space-x-2">
-                    <Loader2 className="animate-spin w-4 h-4" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                     <span>Submitting...</span>
                   </span>
                 ) : (
@@ -146,11 +158,11 @@ export default function RegisterPage() {
 
         {/* Link to login page */}
         <CardFooter>
-          <p className="text-center text-sm w-full">
+          <p className="w-full text-center text-sm">
             Have an account?{" "}
             <Link
               to={{ pathname: "/auth/login" }}
-              className="text-blue-500 dark:text-sky-500 hover:underline"
+              className="text-blue-500 hover:underline dark:text-sky-500"
             >
               Login here
             </Link>

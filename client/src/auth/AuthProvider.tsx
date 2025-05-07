@@ -12,24 +12,26 @@ export function AuthProvider({ children }: props) {
   const [user, setUser] = useState<JwtPayload | null>(null);
   const [loading, setLoading] = useState(true); // <- Add loading state
 
-  const decodeAndSetUser = (token: string) => {
-    const decoded = jwtDecode<JwtPayload>(token);
-    setUser(decoded);
-  };
-
   useEffect(() => {
     const storedToken = localStorage.getItem("token");
     if (storedToken) {
-      setToken(storedToken);
-      decodeAndSetUser(storedToken);
+      const decoded = jwtDecode<JwtPayload>(storedToken);
+      const isTokenExpire = decoded.exp * 1000 < Date.now();
+      if (isTokenExpire) {
+        logout();
+      } else {
+        setToken(storedToken);
+        setUser(decoded);
+      }
     }
     setLoading(false); // <- done loading
   }, []);
 
   const login = (newToken: string) => {
     localStorage.setItem("token", newToken);
+    const decoded = jwtDecode<JwtPayload>(newToken);
     setToken(newToken);
-    decodeAndSetUser(newToken);
+    setUser(decoded);
   };
 
   const logout = () => {
@@ -50,4 +52,3 @@ export function AuthProvider({ children }: props) {
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }
-

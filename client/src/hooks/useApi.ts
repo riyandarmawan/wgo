@@ -2,54 +2,56 @@ import { useState } from "react";
 
 type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE" | "PUT";
 
-interface UseApiOptions<TPayload> {
+interface UseApiOptions {
   method: HttpMethod;
-  url: string;
-  headers: Record<string, string>;
-  payload?: TPayload;
+  endpoint: string;
+  headers?: Record<string, string>;
 }
 
-interface UseApiResult<TResponse> {
+interface UseApiResult<TRequest, TResponse> {
   data: TResponse | null;
   error: string;
   loading: boolean;
-  execute: () => Promise<void>;
+  execute: (body?: TRequest) => Promise<TResponse | null>;
 }
 
-export default function useApi<TResponse = unknown, TPayload = unknown>({
+const SERVER_URL = import.meta.env.VITE_SERVER_URL;
+
+export default function useApi<TRequest = unknown, TResponse = unknown>({
   method,
-  url,
+  endpoint,
   headers,
-  payload,
-}: UseApiOptions<TPayload>): UseApiResult<TResponse> {
+}: UseApiOptions): UseApiResult<TRequest, TResponse> {
   const [data, setData] = useState<TResponse | null>(null);
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
 
-  const execute = async () => {
+  const execute = async (body?: TRequest): Promise<TResponse | null> => {
     setLoading(true);
     setError("");
     setData(null);
 
     try {
-      const res = await fetch(url, {
+      const res = await fetch(`${SERVER_URL}${endpoint}`, {
         method,
         headers: {
           "Content-Type": "application/json",
           ...headers,
         },
         body:
-          method === "GET" || method === "DELETE"
-            ? null
-            : JSON.stringify(payload),
+          method === "GET" || method === "DELETE" ? null : JSON.stringify(body),
       });
 
-      if (!res.ok) throw new Error("API request failed");
+      const json = await res.json();
 
-      const result = await res.json();
+      if (!res.ok) throw new Error(json.message || "API request failed");
+
+      const { data: result } = json;
       setData(result);
+      return result;
     } catch (err) {
       if (err instanceof Error) setError(err.message);
+      return null;
     } finally {
       setLoading(false);
     }

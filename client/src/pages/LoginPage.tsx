@@ -25,11 +25,11 @@ import {
 
 // Routing, authentication, and utilities
 import { Link, useNavigate } from "react-router-dom";
-import { loginUser } from "@/lib/api/auth"; // API call for logging in
 import { useAuth } from "@/auth/useAuth"; // Auth context for login method
 import { toast } from "sonner"; // Notification utility
 import { Loader2 } from "lucide-react"; // Icon for loading spinner
-import { useState } from "react";
+import useApi from "@/hooks/useApi";
+import { useEffect } from "react";
 
 // Define form schema using Zod for validation
 const loginSchema = z.object({
@@ -37,10 +37,22 @@ const loginSchema = z.object({
   password: z.string().min(6, "Password must be at least 6 characters"),
 });
 
+type LoginRequest = {
+  username: string;
+  password: string;
+};
+
+type LoginResponse = {
+  access_token: string;
+};
+
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const [loading, setLoading] = useState<boolean>(false); // Loading state for form submission
+  const { error, loading, execute } = useApi<LoginRequest, LoginResponse>({
+    endpoint: "/auth/login",
+    method: "POST",
+  });
 
   // Initialize react-hook-form with Zod resolver
   const form = useForm<z.infer<typeof loginSchema>>({
@@ -51,23 +63,24 @@ export default function LoginPage() {
     },
   });
 
+  useEffect(() => {
+    if (error.length > 0) {
+      toast.error(error);
+    }
+  }, [error]);
+
   // Handle form submission
   async function onSubmit(values: z.infer<typeof loginSchema>) {
-    setLoading(true); // Show loader
-    try {
-      const res = await loginUser(values); // API call to login
-      login(res.data.access_token); // Store token in auth context
+    const response = await execute(values); // API call to login
 
-      navigate("/"); // Redirect to homepage on success
-    } catch (error: unknown) {
-      toast.error((error as Error).message); // Show error toast on failure
-    } finally {
-      setLoading(false); // Reset loading state
-    }
+    if (!response) return;
+
+    login(response.access_token); // Store token in auth context
+    navigate("/"); // Redirect to homepage on success
   }
 
   return (
-    <div className="container flex items-center justify-center h-dvh">
+    <div className="container flex h-dvh items-center justify-center">
       {/* Login Card container */}
       <Card className="w-full max-w-sm">
         <CardHeader>
@@ -117,7 +130,7 @@ export default function LoginPage() {
               <Button type="submit" className="w-full" disabled={loading}>
                 {loading ? (
                   <span className="flex items-center justify-center space-x-2">
-                    <Loader2 className="animate-spin w-4 h-4" />
+                    <Loader2 className="h-4 w-4 animate-spin" />
                     <span>Submitting...</span>
                   </span>
                 ) : (
@@ -130,11 +143,11 @@ export default function LoginPage() {
 
         {/* Footer with registration link */}
         <CardFooter>
-          <p className="text-center text-sm w-full">
+          <p className="w-full text-center text-sm">
             Don't have an account yet?{" "}
             <Link
               to={{ pathname: "/auth/register" }}
-              className="text-blue-500 dark:text-sky-500 hover:underline"
+              className="text-blue-500 hover:underline dark:text-sky-500"
             >
               Register here
             </Link>
