@@ -28,7 +28,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/auth/useAuth"; // Auth context for login method
 import { toast } from "sonner"; // Notification utility
 import { Loader2 } from "lucide-react"; // Icon for loading spinner
-import useApi from "@/hooks/useApi";
+import usePost from "@/hooks/usePost";
 import { useEffect } from "react";
 
 // Define form schema using Zod for validation
@@ -49,7 +49,7 @@ type LoginResponse = {
 export default function LoginPage() {
   const navigate = useNavigate();
   const { login } = useAuth();
-  const { error, loading, execute } = useApi<LoginRequest, LoginResponse>({
+  const { error, loading, execute } = usePost<LoginRequest, LoginResponse>({
     endpoint: "/auth/login",
     method: "POST",
   });

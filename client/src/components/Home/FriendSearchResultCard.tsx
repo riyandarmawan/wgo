@@ -7,11 +7,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import { useState } from "react";
-import { postJSON } from "@/lib/http/post-json";
-import { toast } from "sonner";
-import { useAuth } from "@/auth/useAuth";
-import useApi from "@/hooks/useApi";
 
 export function FriendSearchResultCard({
   id,
@@ -19,23 +14,6 @@ export function FriendSearchResultCard({
   username,
   friendshipStatus,
 }: Friend) {
-  const { token } = useAuth();
-
-  const SERVER_URL = import.meta.env.VITE_SERVER_URL;
-
-  const { error, loading, execute } = useApi({
-    method: "POST",
-    url: `${SERVER_URL}/friends/requests`,
-    headers: { Authorization: `Bearer ${token}` },
-    payload: { receiverId: id },
-  });
-
-  if (error) return toast.error(error);
-
-  const handleAddFriend = async () => {
-    execute();
-  };
-
   return (
     <div className="flex items-center gap-4 rounded-md border bg-secondary/20 px-4 py-2 shadow-md transition hover:bg-secondary">
       <div className="size-12 shrink-0 rounded-full bg-blue-500" />
@@ -54,7 +32,6 @@ export function FriendSearchResultCard({
               <Button
                 variant="accept"
                 className="cursor-pointer"
-                onClick={handleAddFriend}
               >
                 <UserPlus />
               </Button>

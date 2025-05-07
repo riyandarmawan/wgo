@@ -2,13 +2,13 @@ import { useState } from "react";
 
 type HttpMethod = "GET" | "POST" | "PATCH" | "DELETE" | "PUT";
 
-interface UseApiOptions {
+interface usePostOptions {
   method: HttpMethod;
   endpoint: string;
   headers?: Record<string, string>;
 }
 
-interface UseApiResult<TRequest, TResponse> {
+interface usePostResult<TRequest, TResponse> {
   data: TResponse | null;
   error: string;
   loading: boolean;
@@ -17,11 +17,11 @@ interface UseApiResult<TRequest, TResponse> {
 
 const SERVER_URL = import.meta.env.VITE_SERVER_URL;
 
-export default function useApi<TRequest = unknown, TResponse = unknown>({
+export default function usePost<TRequest = unknown, TResponse = unknown>({
   method,
   endpoint,
   headers,
-}: UseApiOptions): UseApiResult<TRequest, TResponse> {
+}: usePostOptions): usePostResult<TRequest, TResponse> {
   const [data, setData] = useState<TResponse | null>(null);
   const [error, setError] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);

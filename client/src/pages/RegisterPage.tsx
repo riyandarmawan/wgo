@@ -28,7 +28,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "@/auth/useAuth"; // Auth context
 import { toast } from "sonner"; // Notification system
 import { Loader2 } from "lucide-react"; // Loading spinner icon
-import useApi from "@/hooks/useApi";
+import usePost from "@/hooks/usePost";
 import { useEffect } from "react";
 
 // Define form schema for validation using Zod
@@ -51,9 +51,10 @@ type RegisterResponse = {
 export default function RegisterPage() {
   const navigate = useNavigate();
   const { login } = useAuth(); // Auth context to login after registration
-  const { error, loading, execute } = useApi<RegisterRequest, RegisterResponse>(
-    { endpoint: "/auth/register", method: "POST" },
-  );
+  const { error, loading, execute } = usePost<
+    RegisterRequest,
+    RegisterResponse
+  >({ endpoint: "/auth/register", method: "POST" });
 
   // React Hook Form setup
   const form = useForm<z.infer<typeof registerSchema>>({

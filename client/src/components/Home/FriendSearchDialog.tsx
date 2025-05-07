@@ -9,7 +9,7 @@ import { DialogClose } from "@radix-ui/react-dialog";
 import { Input } from "../ui/input";
 import { Button } from "../ui/button";
 import { FriendSearchResultCard } from "./FriendSearchResultCard";
-import useFetch from "@/hooks/useFetch";
+import useGet from "@/hooks/useGet";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { FriendCardSkeleton } from "./FriendCardSkeleton";
@@ -17,8 +17,6 @@ import { Friend } from "@/utils/types/friend";
 import { useDebounce } from "use-debounce";
 
 export function FriendSearchDialog() {
-  const SERVER_URL = import.meta.env.VITE_SERVER_URL;
-
   const [value, setValue] = useState<string>("");
   const [keyword] = useDebounce(value, 300);
 
@@ -26,7 +24,9 @@ export function FriendSearchDialog() {
     data: friends,
     error,
     loading,
-  } = useFetch<Friend[]>(`${SERVER_URL}/users/search?keyword=${keyword}`);
+  } = useGet<Friend[]>({
+    endpoint: `/users/search?keyword=${keyword}`,
+  });
 
   const handleValueChange = (value: string) => setValue(value);
 
@@ -53,7 +53,7 @@ export function FriendSearchDialog() {
         />
         <div className="friend-search-dialog-content mt-4 flex max-h-[50dvh] min-h-[40dvh] flex-col gap-2 overflow-y-auto">
           {loading ? (
-            Array.from({ length: 3 }).map((_, idx) => (
+            Array.from({ length: 4 }).map((_, idx) => (
               <FriendCardSkeleton key={idx} />
             ))
           ) : friends && friends.length > 0 ? (
