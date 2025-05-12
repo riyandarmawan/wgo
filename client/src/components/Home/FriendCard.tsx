@@ -7,13 +7,29 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
+import usePost from "@/hooks/usePost";
+import { useAuth } from "@/auth/useAuth";
+import { toast } from "sonner";
+import { useState } from "react";
 
-export function FriendCard({
-  id,
-  name,
-  username,
-  friendshipStatus,
-}: Friend) {
+export function FriendCard({ id, name, username, friendshipStatus }: Friend) {
+  const { token } = useAuth();
+  const { error, execute } = usePost({
+    endpoint: "/friends/requests/",
+    method: "POST",
+    headers: { Authorization: `Bearer ${token}` },
+  });
+
+  const [status, setStatus] = useState(friendshipStatus);
+
+  async function handleAddFriend() {
+    await execute({ receiverId: id });
+
+    setStatus("pending");
+  }
+
+  if (error) toast.error(error);
+
   return (
     <div className="flex items-center gap-4 rounded-md border bg-secondary/20 px-4 py-2 shadow-md transition hover:bg-secondary">
       <div className="size-12 shrink-0 rounded-full bg-blue-500" />
@@ -32,6 +48,7 @@ export function FriendCard({
               <Button
                 variant="accept"
                 className="cursor-pointer"
+                onClick={handleAddFriend}
               >
                 <UserPlus />
               </Button>
@@ -40,7 +57,7 @@ export function FriendCard({
               <p>Add Friend</p>
             </TooltipContent>
           </Tooltip>
-        ) : friendshipStatus === "pending" ? (
+        ) : status === "pending" ? (
           <Tooltip>
             <TooltipTrigger asChild>
               <Button disabled variant="pending" className="cursor-pointer">

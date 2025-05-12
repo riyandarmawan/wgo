@@ -10,6 +10,7 @@ import { FriendRequestModule } from './friend-request/friend-request.module';
 import { FriendRequest } from './friend-request/friend-request.entity';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MessagingGateway } from './messaging/messaging.gateway';
+import { FriendRequestEvents } from './friend-request/friend-request.events';
 
 @Module({
   imports: [
@@ -36,6 +37,6 @@ import { MessagingGateway } from './messaging/messaging.gateway';
     EventEmitterModule.forRoot(),
   ],
   controllers: [AppController],
-  providers: [AppService, MessagingGateway],
+  providers: [AppService, MessagingGateway, FriendRequestEvents],
 })
 export class AppModule {}

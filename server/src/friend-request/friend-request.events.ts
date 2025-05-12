@@ -4,11 +4,13 @@ import { MessagingGateway } from 'src/messaging/messaging.gateway';
 import { FriendRequest } from './friend-request.entity';
 
 @Injectable()
-export class FriendRequestEvent {
+export class FriendRequestEvents {
   constructor(private readonly gateway: MessagingGateway) {}
 
   @OnEvent('friendRequest.created')
   friendRequestCreated(payload: FriendRequest) {
-    console.log('friendRequest.created');
+    const receiverSocket = this.gateway.users.get(payload.receiver.id);
+
+    if (receiverSocket) receiverSocket.emit('newFriendRequest', payload);
   }
 }
