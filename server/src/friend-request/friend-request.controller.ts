@@ -13,10 +13,14 @@ import { AuthUser } from 'src/utils/decorators/auth-user.decorator';
 import { User } from 'src/user/user.entity';
 import { CreateFriendRequestDto } from './dtos/create-friend-request.dto';
 import { FriendRequest } from './friend-request.entity';
+import { EventEmitter2 } from '@nestjs/event-emitter';
 
 @Controller('friends/requests')
 export class FriendRequestController {
-  constructor(private readonly friendRequestService: FriendRequestService) {}
+  constructor(
+    private readonly friendRequestService: FriendRequestService,
+    private eventEmitter: EventEmitter2,
+  ) {}
 
   /**
    * POST /friends/requests
@@ -40,6 +44,8 @@ export class FriendRequestController {
       senderId,
       receiverId,
     });
+
+    this.eventEmitter.emit('friendRequest.created', friendRequest);
 
     return friendRequest;
   }

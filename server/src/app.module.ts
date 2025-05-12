@@ -8,6 +8,8 @@ import { User } from './user/user.entity';
 import { UserModule } from './user/user.module';
 import { FriendRequestModule } from './friend-request/friend-request.module';
 import { FriendRequest } from './friend-request/friend-request.entity';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { MessagingGateway } from './messaging/messaging.gateway';
 
 @Module({
   imports: [
@@ -31,8 +33,9 @@ import { FriendRequest } from './friend-request/friend-request.entity';
     AuthModule,
     UserModule,
     FriendRequestModule,
+    EventEmitterModule.forRoot(),
   ],
   controllers: [AppController],
-  providers: [AppService],
+  providers: [AppService, MessagingGateway],
 })
 export class AppModule {}

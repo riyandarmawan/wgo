@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 import { AuthContextType, JwtPayload } from "@/utils/types/auth";
 import { AuthContext } from "@/context/auth-context";
+import { socket } from "@/socket";
 
 type props = {
   children: React.ReactNode;
@@ -19,10 +20,15 @@ export function AuthProvider({ children }: props) {
       const isTokenExpire = decoded.exp * 1000 < Date.now();
       if (isTokenExpire) {
         logout();
+        socket.disconnect();
       } else {
         setToken(storedToken);
         setUser(decoded);
+        socket.auth = { token: storedToken }; // set auth with token to socket
+        socket.connect();
       }
+    } else {
+      socket.disconnect();
     }
     setLoading(false); // <- done loading
   }, []);
@@ -32,12 +38,15 @@ export function AuthProvider({ children }: props) {
     const decoded = jwtDecode<JwtPayload>(newToken);
     setToken(newToken);
     setUser(decoded);
+    socket.auth = { token: newToken }; // set auth with token to socket
+    socket.connect();
   };
 
   const logout = () => {
     localStorage.removeItem("token");
     setToken(null);
     setUser(null);
+    socket.disconnect();
   };
 
   const value: AuthContextType = {
