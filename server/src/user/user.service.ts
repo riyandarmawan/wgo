@@ -73,19 +73,23 @@ export class UserService {
 
     // Create a map of friendship status keyed by other user ID
     const friendshipMap = new Map<string, FriendRequestStatus>();
+    const senderMap = new Map<string, string>();
 
     friendships.forEach((friendship) => {
       const otherUserId =
         friendship.sender.id === userId
           ? friendship.receiver.id
           : friendship.sender.id;
+
       friendshipMap.set(otherUserId, friendship.status);
+      senderMap.set(otherUserId, friendship.sender.id);
     });
 
     // Return search results with friendship status
     return users.map((user) => ({
       ...user,
       friendshipStatus: friendshipMap.get(user.id) || null,
+      requestSender: senderMap.get(user.id) || null,
     }));
   }
 

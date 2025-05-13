@@ -5,4 +5,5 @@ export class UserSearchResultDto {
   username: string;
   name: string;
   friendshipStatus: FriendRequestStatus | null;
+  requestSender: string | null;
 }

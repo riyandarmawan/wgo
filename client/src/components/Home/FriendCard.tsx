@@ -1,26 +1,21 @@
 import { Friend } from "@/utils/types/friend";
-import { Button } from "../ui/button";
-import { Clock, UserMinus, UserPlus } from "lucide-react";
-import {
-  Tooltip,
-  TooltipContent,
-  TooltipProvider,
-  TooltipTrigger,
-} from "../ui/tooltip";
 import usePost from "@/hooks/usePost";
 import { useAuth } from "@/auth/useAuth";
 import { toast } from "sonner";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { FriendCardButton } from "./FriendCardButton";
 
 export function FriendCard({ id, name, username, friendshipStatus }: Friend) {
-  const { token } = useAuth();
+  const { token, user } = useAuth();
   const { error, execute } = usePost({
     endpoint: "/friends/requests/",
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
   });
 
-  const [status, setStatus] = useState(friendshipStatus);
+  const [status, setStatus] = useState<"accept" | "pending" | null>(
+    friendshipStatus,
+  );
 
   async function handleAddFriend() {
     await execute({ receiverId: id });
@@ -28,7 +23,29 @@ export function FriendCard({ id, name, username, friendshipStatus }: Friend) {
     setStatus("pending");
   }
 
-  if (error) toast.error(error);
+  useEffect(() => {
+    if (error) toast.error(error);
+  }, [error]);
+
+  function renderFriendCardButton() {
+    return status === null ? (
+      <FriendCardButton status={null} action={handleAddFriend} />
+    ) : status === "pending" && username === user?.username ? (
+      <FriendCardButton status="pending" action={handleAddFriend} />
+    ) : status === "pending" && username !== user?.username ? (
+      <>
+        <FriendCardButton status="accept" action={handleAddFriend} />
+        <FriendCardButton status="delete" action={handleAddFriend} />
+      </>
+    ) : status === "accept" ? (
+      <>
+        <FriendCardButton action={handleAddFriend} />
+        <FriendCardButton status="delete" action={handleAddFriend} />
+      </>
+    ) : (
+      ""
+    );
+  }
 
   return (
     <div className="flex items-center gap-4 rounded-md border bg-secondary/20 px-4 py-2 shadow-md transition hover:bg-secondary">
@@ -41,46 +58,7 @@ export function FriendCard({ id, name, username, friendshipStatus }: Friend) {
           @{username}
         </h3>
       </div>
-      <TooltipProvider>
-        {friendshipStatus === null ? (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button
-                variant="accept"
-                className="cursor-pointer"
-                onClick={handleAddFriend}
-              >
-                <UserPlus />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Add Friend</p>
-            </TooltipContent>
-          </Tooltip>
-        ) : status === "pending" ? (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button disabled variant="pending" className="cursor-pointer">
-                <Clock />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Request Pending</p>
-            </TooltipContent>
-          </Tooltip>
-        ) : (
-          <Tooltip>
-            <TooltipTrigger asChild>
-              <Button variant="delete" className="cursor-pointer">
-                <UserMinus />
-              </Button>
-            </TooltipTrigger>
-            <TooltipContent>
-              <p>Remove Friend</p>
-            </TooltipContent>
-          </Tooltip>
-        )}
-      </TooltipProvider>
+      {renderFriendCardButton()}
     </div>
   );
 }
