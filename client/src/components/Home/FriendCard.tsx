@@ -5,7 +5,13 @@ import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { FriendCardButton } from "./FriendCardButton";
 
-export function FriendCard({ id, name, username, friendshipStatus }: Friend) {
+export function FriendCard({
+  id,
+  name,
+  username,
+  friendshipStatus,
+  requestSender,
+}: Friend) {
   const { token, user } = useAuth();
   const { error, execute } = usePost({
     endpoint: "/friends/requests/",
@@ -13,7 +19,7 @@ export function FriendCard({ id, name, username, friendshipStatus }: Friend) {
     headers: { Authorization: `Bearer ${token}` },
   });
 
-  const [status, setStatus] = useState<"accept" | "pending" | null>(
+  const [status, setStatus] = useState<"accepted" | "pending" | null>(
     friendshipStatus,
   );
 
@@ -30,16 +36,19 @@ export function FriendCard({ id, name, username, friendshipStatus }: Friend) {
   function renderFriendCardButton() {
     return status === null ? (
       <FriendCardButton status={null} action={handleAddFriend} />
-    ) : status === "pending" && username === user?.username ? (
-      <FriendCardButton status="pending" action={handleAddFriend} />
-    ) : status === "pending" && username !== user?.username ? (
+    ) : status === "pending" && requestSender === user?.sub ? (
       <>
-        <FriendCardButton status="accept" action={handleAddFriend} />
+        <FriendCardButton status="pending" action={handleAddFriend} />
         <FriendCardButton status="delete" action={handleAddFriend} />
       </>
-    ) : status === "accept" ? (
+    ) : status === "pending" && requestSender !== user?.sub ? (
       <>
-        <FriendCardButton action={handleAddFriend} />
+        <FriendCardButton status="accepted" action={handleAddFriend} />
+        <FriendCardButton status="delete" action={handleAddFriend} />
+      </>
+    ) : status === "accepted" ? (
+      <>
+        <FriendCardButton status="chat" action={handleAddFriend} />
         <FriendCardButton status="delete" action={handleAddFriend} />
       </>
     ) : (

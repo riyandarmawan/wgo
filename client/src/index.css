@@ -27,8 +27,10 @@
   --color-muted-foreground: var(--muted-foreground);
   --color-accent: var(--accent);
   --color-accent-foreground: var(--accent-foreground);
-  --color-accept: var(--accept);
-  --color-accept-foreground: var(--accept-foreground);
+  --color-accepted: var(--accepted);
+  --color-accepted-foreground: var(--accepted-foreground);
+  --color-chat: var(--chat);
+  --color-chat-foreground: var(--chat-foreground);
   --color-pending: var(--pending);
   --color-pending-foreground: var(--pending-foreground);
   --color-delete: var(--delete);
@@ -68,8 +70,10 @@
   --muted-foreground: oklch(0.552 0.016 285.938);
   --accent: oklch(0.967 0.001 286.375);
   --accent-foreground: oklch(0.21 0.006 285.885);
-  --accept: oklch(72.3% 0.219 149.579);
-  --accept-foreground: oklch(26.6% 0.065 152.934);
+  --accepted: oklch(72.3% 0.219 149.579);
+  --accepted-foreground: oklch(26.6% 0.065 152.934);
+  --chat: oklch(62.3% 0.214 259.815);
+  --chat-foreground: oklch(28.2% 0.091 267.935);
   --pending: oklch(79.5% 0.184 86.047);
   --pending-foreground: oklch(28.6% 0.066 53.813);
   --delete: oklch(63.7% 0.237 25.331);
@@ -108,8 +112,10 @@
   --muted-foreground: oklch(0.705 0.015 286.067);
   --accent: oklch(0.274 0.006 286.033);
   --accent-foreground: oklch(0.985 0 0);
-  --accept: oklch(72.3% 0.219 149.579);
-  --accept-foreground: oklch(98.2% 0.018 155.826);
+  --accepted: oklch(72.3% 0.219 149.579);
+  --accepted-foreground: oklch(98.2% 0.018 155.826);
+  --chat: oklch(62.3% 0.214 259.815);
+  --chat-foreground: oklch(97% 0.014 254.604);
   --pending: oklch(79.5% 0.184 86.047);
   --pending-foreground: oklch(98.7% 0.026 102.212);
   --delete: oklch(63.7% 0.237 25.331);
@@ -169,6 +175,6 @@ body {
 
 @media (max-height: 500px) {
   .friend-search-dialog-content {
-    @apply max-h-[20dvh] min-h-[20dvh]
+    @apply max-h-[20dvh] min-h-[20dvh];
   }
 }

@@ -3,7 +3,7 @@ import { Button } from "../ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "../ui/tooltip";
 
 type FriendCardButtonProps = {
-  status?: null | "accept" | "pending" | "delete";
+  status: null | "accepted" | "pending" | "delete" | "chat";
   action: React.MouseEventHandler<HTMLButtonElement>;
 };
 
@@ -12,12 +12,12 @@ export function FriendCardButton({ status, action }: FriendCardButtonProps) {
     <Tooltip>
       <TooltipTrigger asChild>
         <Button
-          variant={status === null ? "accept" : status}
+          variant={status === null ? "accepted" : status}
           className="cursor-pointer"
           onClick={action}
           disabled={status === "pending"}
         >
-          {status === null || status === "accept" ? (
+          {status === null || status === "accepted" ? (
             <UserPlus />
           ) : status === "pending" ? (
             <Clock />
@@ -31,7 +31,7 @@ export function FriendCardButton({ status, action }: FriendCardButtonProps) {
       <TooltipContent>
         {status === null ? (
           <p>Add friend</p>
-        ) : status === "accept" ? (
+        ) : status === "accepted" ? (
           <p>Accept the friend request</p>
         ) : status === "pending" ? (
           <p>Friend request is pending</p>

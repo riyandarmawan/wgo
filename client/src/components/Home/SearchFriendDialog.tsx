@@ -42,15 +42,18 @@ export function SearchFriendDialog() {
             <FriendCardSkeleton key={idx} />
           ))
         ) : friends && friends.length > 0 ? (
-          friends.map(({ id, name, username, friendshipStatus }) => (
-            <FriendCard
-              key={id}
-              id={id}
-              name={name}
-              username={username}
-              friendshipStatus={friendshipStatus}
-            />
-          ))
+          friends.map(
+            ({ id, name, username, friendshipStatus, requestSender }) => (
+              <FriendCard
+                key={id}
+                id={id}
+                name={name}
+                username={username}
+                friendshipStatus={friendshipStatus}
+                requestSender={requestSender}
+              />
+            ),
+          )
         ) : (
           <div className="flex flex-1 items-center justify-center text-sm text-muted-foreground">
             No friends found.

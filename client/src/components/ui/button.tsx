@@ -11,8 +11,10 @@ const buttonVariants = cva(
       variant: {
         default:
           "bg-primary text-primary-foreground shadow-xs hover:bg-primary/90",
-        accept:
-          "bg-accept text-accept-foreground shadow-xs hover:bg-accept/80",
+        chat:
+          "bg-chat text-chat-foreground shadow-xs hover:bg-chat/80",
+        accepted:
+          "bg-accepted text-accepted-foreground shadow-xs hover:bg-accepted/80",
         pending:
           "bg-pending text-pending-foreground shadow-xs hover:bg-pending/80",
         delete:
