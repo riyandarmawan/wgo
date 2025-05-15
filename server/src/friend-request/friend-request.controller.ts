@@ -72,6 +72,8 @@ export class FriendRequestController {
       userId,
     });
 
+    this.eventEmitter.emit('friendRequest.accepted', response);
+
     return response;
   }
 

@@ -13,4 +13,11 @@ export class FriendRequestEvents {
 
     if (receiverSocket) receiverSocket.emit('newFriendRequest', payload);
   }
+
+  @OnEvent('friendRequest.accepted')
+  friendRequestAccepted(payload: FriendRequest) {
+    const senderSocket = this.gateway.users.get(payload.sender.id);
+
+    if (senderSocket) senderSocket.emit('friendRequestAccepted', payload);
+  }
 }

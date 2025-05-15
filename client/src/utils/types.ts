@@ -29,3 +29,25 @@ export type authResponse = {
   data: { access_token: string };
   message: string;
 };
+
+export type FriendRequest = {
+  id: string;
+  sender: {
+    id: string;
+    username: string;
+    name: string;
+  };
+  receiver: {
+    id: string;
+    username: string;
+    name: string;
+  };
+  status: "accepted" | "pending" | null;
+};
+
+export type Friend = {
+  id: string;
+  username: string;
+  name: string;
+  friendRequest: FriendRequest;
+};

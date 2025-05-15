@@ -1,9 +1,8 @@
-import { FriendRequestStatus } from 'src/friend-request/types/friend-request-status.enum';
+import { FriendRequest } from 'src/friend-request/friend-request.entity';
 
 export class UserSearchResultDto {
   id: string;
   username: string;
   name: string;
-  friendshipStatus: FriendRequestStatus | null;
-  requestSender: string | null;
+  friendRequest: FriendRequest | null;
 }

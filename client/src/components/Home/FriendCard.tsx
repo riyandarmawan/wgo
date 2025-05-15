@@ -1,59 +1,94 @@
-import { Friend } from "@/utils/types/friend";
+import { Friend, FriendRequest } from "@/utils/types";
 import usePost from "@/hooks/usePost";
 import { useAuth } from "@/auth/useAuth";
 import { toast } from "sonner";
 import { useEffect, useState } from "react";
 import { FriendCardButton } from "./FriendCardButton";
+import { socket } from "@/socket";
 
-export function FriendCard({
-  id,
-  name,
-  username,
-  friendshipStatus,
-  requestSender,
-}: Friend) {
+export function FriendCard({ id, name, username, friendRequest }: Friend) {
   const { token, user } = useAuth();
-  const { error, execute } = usePost({
+  const { error: errorAddFriend, execute: executeAddFriend } = usePost({
     endpoint: "/friends/requests/",
     method: "POST",
     headers: { Authorization: `Bearer ${token}` },
   });
 
   const [status, setStatus] = useState<"accepted" | "pending" | null>(
-    friendshipStatus,
+    friendRequest?.status ?? null,
+  );
+  const [sender, setSender] = useState<string | null>(
+    friendRequest?.sender?.id ?? null,
   );
 
-  async function handleAddFriend() {
-    await execute({ receiverId: id });
+  const userId = user?.sub;
 
+  async function handleAddFriend() {
+    await executeAddFriend({ receiverId: id });
     setStatus("pending");
+    setSender(userId);
+  }
+
+  async function handleAcceptFriend() {
+    await executeAddFriend({ receiverId: id, action: "accept" });
+    setStatus("accepted");
+  }
+
+  async function handleDeleteRequest() {
+    await executeAddFriend({ receiverId: id, action: "delete" });
+    setStatus(null);
+    setSender(null);
   }
 
   useEffect(() => {
-    if (error) toast.error(error);
-  }, [error]);
+    if (errorAddFriend) toast.error(errorAddFriend);
+
+    function onNewFriendRequest(payload: FriendRequest) {
+      if (id === payload.sender.id) {
+        setStatus(payload.status);
+        setSender(payload.sender.id);
+
+        toast.message("New Friend Request", {
+          description: `${payload.sender.name} want to be your friend`,
+        });
+      }
+    }
+
+    socket.on("newFriendRequest", onNewFriendRequest);
+
+    return () => {
+      socket.off("newFriendRequest");
+    };
+  }, [errorAddFriend, id]);
 
   function renderFriendCardButton() {
-    return status === null ? (
-      <FriendCardButton status={null} action={handleAddFriend} />
-    ) : status === "pending" && requestSender === user?.sub ? (
-      <>
-        <FriendCardButton status="pending" action={handleAddFriend} />
-        <FriendCardButton status="delete" action={handleAddFriend} />
-      </>
-    ) : status === "pending" && requestSender !== user?.sub ? (
-      <>
-        <FriendCardButton status="accepted" action={handleAddFriend} />
-        <FriendCardButton status="delete" action={handleAddFriend} />
-      </>
-    ) : status === "accepted" ? (
-      <>
-        <FriendCardButton status="chat" action={handleAddFriend} />
-        <FriendCardButton status="delete" action={handleAddFriend} />
-      </>
-    ) : (
-      ""
-    );
+    if (status === null) {
+      return <FriendCardButton status={null} action={handleAddFriend} />;
+    }
+
+    if (status === "pending") {
+      const isSender = sender === userId;
+      return (
+        <>
+          <FriendCardButton
+            status={isSender ? "pending" : "accepted"}
+            action={isSender ? handleDeleteRequest : handleAcceptFriend}
+          />
+          <FriendCardButton status="delete" action={handleDeleteRequest} />
+        </>
+      );
+    }
+
+    if (status === "accepted") {
+      return (
+        <>
+          <FriendCardButton status="chat" action={() => {}} />
+          <FriendCardButton status="delete" action={handleDeleteRequest} />
+        </>
+      );
+    }
+
+    return null;
   }
 
   return (

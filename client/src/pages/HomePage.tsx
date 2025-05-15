@@ -1,24 +1,31 @@
+import { useAuth } from "@/auth/useAuth";
 import ChatRoom from "@/components/Home/ChatRoom";
 import Header from "@/components/Home/Header";
 import Rooms from "@/components/Home/Rooms";
 import { socket } from "@/socket";
+import { FriendRequest } from "@/utils/types";
 import { useEffect } from "react";
 import { toast } from "sonner";
 
 export default function HomePage() {
+  const { token } = useAuth();
+
   useEffect(() => {
-    function onNewFriendRequest(payload) {
-      toast.message("New Friend Request", {
-        description: `${payload.sender.name} want to be your friend`,
+    function onFriendRequestAccepted(payload: FriendRequest) {
+      toast.success("Friend Request", {
+        description: `${payload.receiver.name} has accepted your friend request`,
       });
     }
 
-    socket.on("newFriendRequest", onNewFriendRequest);
+    socket.auth = { token }; // set auth with token to socket
+    socket.connect();
+
+    socket.on("friendRequestAccepted", onFriendRequestAccepted);
 
     return () => {
-      socket.off("newFriendRequest", onNewFriendRequest);
+      socket.off("friendRequestAccepted");
     };
-  }, []);
+  }, [token]);
 
   return (
     <div className="grid grid-cols-1 lg:grid-cols-3">

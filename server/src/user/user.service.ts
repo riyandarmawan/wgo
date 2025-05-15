@@ -6,7 +6,6 @@ import { CreateUserDto } from './dtos/create-user.dto';
 import * as bcrypt from 'bcryptjs';
 import { UsernameAlreadyExistsException } from './exceptions/username-already-exists.exception';
 import { FriendRequest } from 'src/friend-request/friend-request.entity';
-import { FriendRequestStatus } from 'src/friend-request/types/friend-request-status.enum';
 import { UserSearchResultDto } from './dtos/user-search-result.dto';
 
 @Injectable()
@@ -72,8 +71,7 @@ export class UserService {
     });
 
     // Create a map of friendship status keyed by other user ID
-    const friendshipMap = new Map<string, FriendRequestStatus>();
-    const senderMap = new Map<string, string>();
+    const friendRequestMap = new Map<string, FriendRequest>();
 
     friendships.forEach((friendship) => {
       const otherUserId =
@@ -81,15 +79,13 @@ export class UserService {
           ? friendship.receiver.id
           : friendship.sender.id;
 
-      friendshipMap.set(otherUserId, friendship.status);
-      senderMap.set(otherUserId, friendship.sender.id);
+      friendRequestMap.set(otherUserId, friendship);
     });
 
     // Return search results with friendship status
     return users.map((user) => ({
       ...user,
-      friendshipStatus: friendshipMap.get(user.id) || null,
-      requestSender: senderMap.get(user.id) || null,
+      friendRequest: friendRequestMap.get(user.id) || null,
     }));
   }
 
